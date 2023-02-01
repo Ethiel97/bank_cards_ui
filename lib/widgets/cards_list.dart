@@ -54,6 +54,7 @@ class _CardsListState extends State<CardsList>
   handleTap() {
     if (animationController.isCompleted) {
       animationController.reverse();
+      setState(() {});
     } else {
       animationController.forward();
     }

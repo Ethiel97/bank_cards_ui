@@ -4,6 +4,6 @@ An experimental app for displaying bank cards in a fancy and enjoyable way with 
 
 ## Screenshots
 
-![Screenshot 1](flutter_01.png)![Screenshot 1](flutter_02.png)![Screenshot 1](flutter_03.png)
+<img alt="Screenshot 1" src="flutter_01.png" width="400"/> <img alt="Screenshot 2" src="flutter_02.png" width="400"/> <img alt="Screenshot 3" src="flutter_03.png" width="400"/>
 
 [Inspiration](https://dribbble.com/shots/9323126-Bank-cards-3-0)
