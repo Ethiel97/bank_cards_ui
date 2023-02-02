@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class AppState with ChangeNotifier {
   CardModel? _currentCard;
 
-  PageController pageController = PageController(viewportFraction: .8);
+  PageController pageController = PageController(viewportFraction: .82);
 
   double _transactionSheetDragRatio = .0;
 
@@ -14,8 +14,8 @@ class AppState with ChangeNotifier {
   CardModel? get currentCard => _currentCard;
 
   set currentCard(CardModel? currentCard) {
-    scrollToCard();
     _currentCard = currentCard;
+    scrollToCard();
     notifyListeners();
   }
 
@@ -26,8 +26,8 @@ class AppState with ChangeNotifier {
     notifyListeners();
   }
 
-  scrollToCard() {
-    if (currentCard != null) {
+  void scrollToCard() {
+    if (currentCard != null && pageController.hasClients) {
       pageController.animateToPage(cards.indexOf(currentCard!),
           duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
     }

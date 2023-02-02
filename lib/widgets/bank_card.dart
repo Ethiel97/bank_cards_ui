@@ -10,12 +10,10 @@ import 'package:provider/provider.dart';
 
 class BankCard extends StatefulWidget {
   final CardModel cardModel;
-  final Function() onTap;
 
   const BankCard({
     Key? key,
     required this.cardModel,
-    required this.onTap,
   }) : super(key: key);
 
   @override
@@ -30,9 +28,17 @@ class _BankCardState extends State<BankCard>
 
   late Animation rotateAnimation;
 
+  late AnimationController flipAnimationController;
+
+  late Animation flipAnimation;
+  double verticalDrag = 0;
+
+  bool isFront = true;
+
   @override
   void dispose() {
     animationController.dispose();
+    flipAnimationController.dispose();
     secondAnimationController.dispose();
     super.dispose();
   }
@@ -43,6 +49,9 @@ class _BankCardState extends State<BankCard>
 
     animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 3000));
+
+    flipAnimationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 500));
 
     secondAnimationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 400));
@@ -98,7 +107,7 @@ class _BankCardState extends State<BankCard>
             to: const Duration(milliseconds: 1400),
             animatable: Tween<Offset>(
               begin: const Offset(0, 0),
-              end: const Offset(0, -.6),
+              end: const Offset(0, -.4),
             ),
             curve: Curves.easeIn,
             tag: 'slide')
@@ -114,86 +123,173 @@ class _BankCardState extends State<BankCard>
         .animate(animationController);
 
     animationController.addStatusListener((status) {
-      // if (status == AnimationStatus.forward) handleCardAnimation();
       print("BANK CARD CLICKED STATUS: $status");
       setState(() {});
     });
   }
 
-  handleCardAnimation() {
+  void resetCardState() {
+    setState(() {
+      verticalDrag = 0;
+      isFront = true;
+    });
+  }
+
+  void handleCardAnimation() {
+    if (Provider.of<AppState>(context, listen: false).isViewingCardDetail) {
+      resetCardState();
+    }
     if (animationController.isCompleted) {
       Provider.of<AppState>(context, listen: false).currentCard = null;
       animationController.reverse();
+      secondAnimationController.reset();
     } else {
       Provider.of<AppState>(context, listen: false).currentCard =
           widget.cardModel;
 
-      print("CARD MODEL: ${widget.cardModel.balance}");
+      print("CLICKED CARD: ${widget.cardModel.toString()}");
       animationController.forward();
     }
-    widget.onTap();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return GestureDetector(
-      onTap: handleCardAnimation,
-      child: Consumer<AppState>(
-          builder: (context, appState, _) => AnimatedSlide(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeIn,
-                offset: Offset(
-                    appState.isViewingCardDetail
-                        ? (appState.dragRatio / 1.2)
-                        : 0,
-                    0),
-                child: AnimatedBuilder(
-                  animation: animationController,
-                  builder: (context, child) {
-                    return Transform(
-                      transform: Matrix4.identity()..setEntry(3, 2, 0.008),
-                      child: AnimatedOpacity(
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeIn,
-                        opacity: (1 - appState.dragRatio),
-                        child: AnimatedScale(
-                          duration: const Duration(milliseconds: 200),
-                          curve: Curves.easeIn,
-                          scale: appState.isViewingCardDetail
-                              ? (1 - appState.dragRatio) * 1.08
-                              : 1,
-                          child: ScaleTransition(
-                            scale:
-                                sequenceAnimation['scale'] as Animation<double>,
-                            child: RotationTransition(
-                              turns: sequenceAnimation['rotate']
-                                  as Animation<double>,
-                              child: SlideTransition(
-                                position: sequenceAnimation['slide']
-                                    as Animation<Offset>,
-                                child: ScaleTransition(
-                                  scale: sequenceAnimation['bouncing']
-                                      as Animation<double>,
-                                  child: Transform.translate(
-                                    offset: const Offset(0, -65),
-                                    child: child,
-                                  ),
-                                ),
-                              ),
-                            ),
+    return Consumer<AppState>(
+      builder: (context, appState, _) => GestureDetector(
+        onVerticalDragStart: (_) {
+          flipAnimationController.reset();
+          setState(() {
+            resetCardState();
+          });
+        },
+        onVerticalDragUpdate: (details) {
+          if (appState.isViewingCardDetail) {
+            setState(() {
+              verticalDrag += details.delta.dy;
+              verticalDrag %= 360;
+
+              print("VERTICAL DRAG :$verticalDrag");
+              setCardSide();
+            });
+          }
+        },
+        onVerticalDragEnd: (details) {
+          final double end = 360 - verticalDrag >= 180 ? 0 : 360;
+
+          flipAnimation = Tween<double>(begin: verticalDrag, end: end)
+              .animate(flipAnimationController)
+            ..addListener(() {
+              setState(() {
+                verticalDrag = flipAnimation.value;
+                setCardSide();
+              });
+            });
+
+          flipAnimationController.forward();
+        },
+        onTap: handleCardAnimation,
+        child: Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, .001)
+            ..rotateX((verticalDrag / 180) * pi),
+          child: AnimatedSlide(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeIn,
+            offset: Offset(
+                appState.isViewingCardDetail ? (appState.dragRatio / 1.2) : 0,
+                0),
+            child: AnimatedBuilder(
+              animation: animationController,
+              builder: (context, child) => Transform(
+                transform: Matrix4.identity()..setEntry(3, 2, 0.008),
+                child: AnimatedScale(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeIn,
+                  scale: appState.isViewingCardDetail
+                      ? (1 - appState.dragRatio) * 1.12
+                      : 1,
+                  child: ScaleTransition(
+                    scale: sequenceAnimation['scale'] as Animation<double>,
+                    child: RotationTransition(
+                      turns: sequenceAnimation['rotate'] as Animation<double>,
+                      child: SlideTransition(
+                        position:
+                            sequenceAnimation['slide'] as Animation<Offset>,
+                        child: ScaleTransition(
+                          scale: sequenceAnimation['bouncing']
+                              as Animation<double>,
+                          child: Transform.translate(
+                            offset: const Offset(0, -78),
+                            child: child,
                           ),
                         ),
                       ),
-                    );
-                  },
-                  child: card,
+                    ),
+                  ),
                 ),
-              )),
+              ),
+              child: isFront
+                  ? cardFront
+                  : Transform(
+                      transform: Matrix4.identity()..rotateX(pi),
+                      alignment: Alignment.center,
+                      child: cardBack,
+                    ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
-  Widget get card => Card(
+  Widget get cardBack => Card(
+        elevation: 12,
+        shadowColor: Colors.black12.withOpacity(.002),
+        color: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: widget.cardModel.colors,
+                // begin: Alignment.topCenter,
+                transform: const GradientRotation(1 / 16),
+                end: Alignment.bottomCenter,
+              ),
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blueGrey.withOpacity(
+                    .01,
+                  ),
+                  offset: const Offset(0, 25),
+                  blurRadius: 50,
+                )
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: 200,
+                    height: 20,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(
+                          12,
+                        )),
+                  ),
+                )
+              ],
+            )),
+      );
+
+  Widget get cardFront => Card(
         elevation: 12,
         shadowColor: Colors.black12.withOpacity(.002),
         color: Colors.transparent,
@@ -227,8 +323,11 @@ class _BankCardState extends State<BankCard>
                     Expanded(
                       child: Text(
                         "Credit card",
-                        style: TextStyles.mainTextStyle
-                            .apply(color: Colors.white, fontSizeDelta: 3),
+                        style: TextStyles.mainTextStyle.apply(
+                          color: Colors.white,
+                          fontSizeDelta: 4,
+                          fontWeightDelta: 5,
+                        ),
                       ),
                     ),
                     Transform.rotate(
@@ -262,6 +361,10 @@ class _BankCardState extends State<BankCard>
               ],
             )),
       );
+
+  setCardSide() {
+    isFront = (verticalDrag <= 90 || verticalDrag >= 270);
+  }
 
   @override
   bool get wantKeepAlive => true;

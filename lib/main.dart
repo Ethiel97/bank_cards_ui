@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Bank Cards 3.0',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           textTheme: GoogleFonts.poppinsTextTheme(),
@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
   PageController? pageController;
 
-  late Animation<Offset> slideTransition;
+  late AnimationController animationController;
 
   late DraggableScrollableController scrollableController;
 
@@ -60,9 +60,24 @@ class _MyHomePageState extends State<MyHomePage>
 
   double sheetMaxSize = .85;
 
+  late Animation<double> balanceAnimation;
+
+  int previousPage = 0;
+
   @override
   void initState() {
     super.initState();
+
+    animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 200));
+
+    balanceAnimation = Tween<double>(begin: 0, end: cards[currentPage].balance)
+        .animate(animationController);
+
+    animationController.forward();
+    animationController.addListener(() {
+      setState(() {});
+    });
 
     Future.delayed(Duration.zero, () {
       scrollableController =
@@ -76,150 +91,165 @@ class _MyHomePageState extends State<MyHomePage>
       pageController =
           Provider.of<AppState>(context, listen: false).pageController;
 
-      pageController?.addListener(() {
-        setState(() {
-          currentPage = pageController?.page!.floor() ?? 0;
-        });
-      });
+      pageController?.addListener(pageControllerListener);
+    });
+  }
+
+  void pageControllerListener() {
+    // }
+    setState(() {
+      previousPage = currentPage;
+      currentPage = pageController?.page!.floor() ?? 0;
+
+      balanceAnimation = Tween<double>(
+              begin: (cards[previousPage].balance - 80).roundToDouble(),
+              end: cards[currentPage].balance)
+          .animate(animationController);
+
+      animationController.reset();
+      animationController.forward();
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        leading: const Icon(
-          FontAwesomeIcons.longArrowLeft,
-          color: Colors.white,
-          size: 24,
+  Widget build(BuildContext context) => Scaffold(
+        backgroundColor: AppColors.backgroundColor,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          leading: const Icon(
+            FontAwesomeIcons.longArrowLeft,
+            color: Colors.white,
+            size: 24,
+          ),
         ),
-      ),
-      body: Consumer<AppState>(builder: (context, appState, _) {
-        return Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8.0,
-                horizontal: 18,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    height: 24,
-                  ),
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: AnimatedCrossFade(
-                      alignment: Alignment.center,
-                      secondCurve: Curves.easeIn,
-                      firstCurve: Curves.easeOut,
-                      crossFadeState: appState.isViewingCardDetail
-                          ? CrossFadeState.showSecond
-                          : CrossFadeState.showFirst,
-                      duration: const Duration(milliseconds: 500),
-                      secondChild: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Text(
-                            'Full Card',
-                            style: TextStyles.mainTextStyle.apply(
-                              fontSizeDelta: 2,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          Text(
-                            'Rotate the card to view the security code',
-                            style: TextStyles.mainTextStyle.apply(
-                              fontSizeDelta: -4,
-                              color: TextStyles.mainTextStyle.color?.darken(),
-                            ),
-                          ),
-                        ],
-                      ),
-                      firstChild: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Bank Cards',
-                                style: TextStyles.mainTextStyle.apply(
-                                  fontSizeDelta: 15,
-                                  fontWeightDelta: 5,
-                                ),
+        body: Consumer<AppState>(
+          builder: (context, appState, _) => Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8.0,
+                  horizontal: 18,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      height: 24,
+                    ),
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: AnimatedCrossFade(
+                        alignment: Alignment.center,
+                        secondCurve: Curves.easeIn,
+                        firstCurve: Curves.easeOut,
+                        crossFadeState: appState.isViewingCardDetail
+                            ? CrossFadeState.showSecond
+                            : CrossFadeState.showFirst,
+                        duration: const Duration(milliseconds: 500),
+                        secondChild: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Text(
+                              'Full Card',
+                              style: TextStyles.mainTextStyle.apply(
+                                fontSizeDelta: 2,
                               ),
-                              Container(
-                                width: 50,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(100),
-                                  image: const DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: AssetImage(
-                                      'assets/images/avatar.png',
+                            ),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            Text(
+                              'Rotate the card to view the security code',
+                              style: TextStyles.mainTextStyle.apply(
+                                fontSizeDelta: -4,
+                                color: TextStyles.mainTextStyle.color?.darken(),
+                              ),
+                            ),
+                          ],
+                        ),
+                        firstChild: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Bank Cards',
+                                  style: TextStyles.mainTextStyle.apply(
+                                    fontSizeDelta: 15,
+                                    fontWeightDelta: 5,
+                                  ),
+                                ),
+                                Container(
+                                  width: 50,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(100),
+                                    image: const DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: AssetImage(
+                                        'assets/images/avatar.png',
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 36,
-                          ),
-                          Text(
-                            'Balance',
-                            style: TextStyles.mainTextStyle.apply(
-                              fontSizeDelta: -2,
+                              ],
                             ),
-                          ),
-                          AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 800),
-                            child: Text(
-                              "\$${cards[currentPage].balance}",
+                            const SizedBox(
+                              height: 36,
+                            ),
+                            Text(
+                              'Balance',
                               style: TextStyles.mainTextStyle.apply(
-                                fontSizeDelta: 8,
-                                fontWeightDelta: 5,
+                                fontSizeDelta: -2,
                               ),
                             ),
-                          ),
-                        ],
+                            AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 800),
+                              transitionBuilder:
+                                  (Widget child, Animation<double> animation) {
+                                return SlideTransition(
+                                  position: Tween<Offset>(
+                                          begin: Offset(0.0, -0.5),
+                                          end: Offset(0.0, 0.0))
+                                      .animate(animation),
+                                  child: child,
+                                );
+                              },
+                              child: Text(
+                                "\$${balanceAnimation.value}",
+                                style: TextStyles.mainTextStyle.apply(
+                                  fontSizeDelta: 8,
+                                  fontWeightDelta: 5,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  const Expanded(
-                    child: CardsList(),
-                  )
-                ],
+                    Expanded(
+                      child: CardsList(),
+                    )
+                  ],
+                ),
               ),
-            ),
-            draggableSheet(),
-          ],
-        );
-      }),
-    );
-  }
+              draggableSheet(),
+            ],
+          ),
+        ),
+      );
 
-  Widget draggableSheet() =>
-      Consumer<AppState>(builder: (context, appState, _) {
-        return DraggableScrollableSheet(
+  Widget draggableSheet() => Consumer<AppState>(
+        builder: (context, appState, _) => DraggableScrollableSheet(
           snap: true,
           // controller: scrollableController,
           controller: appState.scrollableController,
-          expand: true,
-          initialChildSize: .18,
+          initialChildSize: .40,
           minChildSize: .18,
           maxChildSize: sheetMaxSize,
           builder: (context, controller) => AnimatedSlide(
@@ -243,11 +273,10 @@ class _MyHomePageState extends State<MyHomePage>
                   topRight: Radius.circular(18),
                 ),
                 child: ListView(
-                  // crossAxisAlignment: CrossAxisAlignment.start,
                   controller: controller,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 8),
+                      padding: const EdgeInsets.only(left: 12),
                       child: Text(
                         "Today",
                         style: TextStyles.mainTextStyle.apply(
@@ -276,6 +305,6 @@ class _MyHomePageState extends State<MyHomePage>
               ),
             ),
           ),
-        );
-      });
+        ),
+      );
 }

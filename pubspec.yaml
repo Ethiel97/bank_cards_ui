@@ -42,6 +42,7 @@ dependencies:
   flutter_credit_card:
   provider:
   flutter_sequence_animation:
+  flip_card:
 
 dev_dependencies:
   flutter_test:
