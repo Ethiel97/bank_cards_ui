@@ -177,26 +177,30 @@ class _MyHomePageState extends State<MyHomePage>
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  'Bank Cards',
-                                  style: TextStyles.mainTextStyle.apply(
-                                    fontSizeDelta: 15,
-                                    fontWeightDelta: 5,
-                                  ),
-                                ),
-                                Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100),
-                                    image: const DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: AssetImage(
-                                        'assets/images/avatar.png',
-                                      ),
+                                Expanded(
+                                  child: Text(
+                                    'Bank Cards',
+                                    style: TextStyles.mainTextStyle.apply(
+                                      fontSizeDelta: 15,
+                                      fontWeightDelta: 5,
                                     ),
                                   ),
                                 ),
+                                Flexible(
+                                  child: Container(
+                                    width: 50,
+                                    height: 50,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(100),
+                                      image: const DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: AssetImage(
+                                          'assets/images/avatar.png',
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
                               ],
                             ),
                             const SizedBox(
