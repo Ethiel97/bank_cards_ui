@@ -1,4 +1,5 @@
 import 'package:bank_cards_ui/data/card.dart';
+import 'package:bank_cards_ui/data/transaction.dart';
 import 'package:bank_cards_ui/state.dart';
 import 'package:bank_cards_ui/utils/colors.dart';
 import 'package:bank_cards_ui/widgets/cards_list.dart';
@@ -8,7 +9,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:tinycolor2/tinycolor2.dart';
 
-import 'data/transaction.dart';
 import 'utils/text_styles.dart';
 import 'widgets/transaction_widget.dart';
 
