@@ -60,7 +60,7 @@ class _CardsListState extends State<CardsList>
               quarterTurns: 3,
               child: SizedBox(
                 height: 290,
-                width: 540,
+                width: MediaQuery.of(context).size.width * 1.2,
                 child: AnimatedScale(
                   duration: const Duration(milliseconds: 400),
                   scale: cards.isSelectedCard(appState, i) ? 0 : 1,

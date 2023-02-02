@@ -237,7 +237,10 @@ class _MyHomePageState extends State<MyHomePage>
                       ),
                     ),
                     Expanded(
-                      child: CardsList(),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: CardsList(),
+                      ),
                     )
                   ],
                 ),
