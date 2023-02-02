@@ -214,8 +214,8 @@ class _MyHomePageState extends State<MyHomePage>
                                   (Widget child, Animation<double> animation) {
                                 return SlideTransition(
                                   position: Tween<Offset>(
-                                          begin: Offset(0.0, -0.5),
-                                          end: Offset(0.0, 0.0))
+                                          begin: const Offset(0.0, -0.5),
+                                          end: const Offset(0.0, 0.0))
                                       .animate(animation),
                                   child: child,
                                 );

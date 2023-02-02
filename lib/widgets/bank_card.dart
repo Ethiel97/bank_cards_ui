@@ -81,15 +81,15 @@ class _BankCardState extends State<BankCard>
     sequenceAnimation = SequenceAnimationBuilder()
         .addAnimatable(
             from: const Duration(milliseconds: 400),
-            to: const Duration(milliseconds: 800),
+            to: const Duration(milliseconds: 600),
             animatable: Tween<double>(
               begin: 1,
-              end: .68,
+              end: .6,
             ),
             tag: 'scale')
         .addAnimatable(
-            from: const Duration(milliseconds: 800),
-            to: const Duration(milliseconds: 1200),
+            from: const Duration(milliseconds: 600),
+            to: const Duration(milliseconds: 800),
             animatable: Tween<double>(
               begin: 0,
               end: 90 / 360,
@@ -103,8 +103,8 @@ class _BankCardState extends State<BankCard>
                 begin: Alignment.center, end: Alignment.topCenter),
             tag: 'align')*/
         addAnimatable(
-            from: const Duration(milliseconds: 1200),
-            to: const Duration(milliseconds: 1400),
+            from: const Duration(milliseconds: 800),
+            to: const Duration(milliseconds: 1000),
             animatable: Tween<Offset>(
               begin: const Offset(0, 0),
               end: const Offset(0, -.4),
@@ -112,8 +112,8 @@ class _BankCardState extends State<BankCard>
             curve: Curves.easeIn,
             tag: 'slide')
         .addAnimatable(
-            from: const Duration(milliseconds: 1400),
-            to: const Duration(milliseconds: 1900),
+            from: const Duration(milliseconds: 1000),
+            to: const Duration(milliseconds: 1300),
             animatable: Tween<double>(
               begin: .9,
               end: 1,
@@ -250,43 +250,44 @@ class _BankCardState extends State<BankCard>
         color: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: widget.cardModel.colors,
-                // begin: Alignment.topCenter,
-                transform: const GradientRotation(1 / 16),
-                end: Alignment.bottomCenter,
-              ),
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.blueGrey.withOpacity(
-                    .01,
-                  ),
-                  offset: const Offset(0, 25),
-                  blurRadius: 50,
-                )
-              ],
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: widget.cardModel.colors,
+              // begin: Alignment.topCenter,
+              transform: const GradientRotation(1 / 16),
+              end: Alignment.bottomCenter,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    alignment: Alignment.center,
-                    width: 200,
-                    height: 20,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                          12,
-                        )),
-                  ),
-                )
-              ],
-            )),
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.blueGrey.withOpacity(
+                  .01,
+                ),
+                offset: const Offset(0, 25),
+                blurRadius: 50,
+              )
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  alignment: Alignment.center,
+                  width: 200,
+                  height: 20,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(
+                        12,
+                      )),
+                ),
+              )
+            ],
+          ),
+        ),
       );
 
   Widget get cardFront => Card(
