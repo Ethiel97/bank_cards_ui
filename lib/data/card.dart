@@ -28,8 +28,6 @@ List<CardModel> cards = List.generate(
             index + 1, (index + 1) * 125, AppColors.gradientColors[index]))
     .toList();
 
-class Transaction {}
-
 extension CardsExt on List<CardModel> {
   bool isSelectedCard(AppState appState, int index) {
     return appState.currentCard != null && appState.currentCard != this[index];
