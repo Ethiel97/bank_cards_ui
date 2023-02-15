@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:bank_cards_ui/data/card.dart';
 import 'package:bank_cards_ui/state.dart';
 import 'package:bank_cards_ui/utils/text_styles.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sequence_animation/flutter_sequence_animation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -123,7 +124,9 @@ class _BankCardState extends State<BankCard>
         .animate(animationController);
 
     animationController.addStatusListener((status) {
-      print("BANK CARD CLICKED STATUS: $status");
+      if (kDebugMode) {
+        print("BANK CARD CLICKED STATUS: $status");
+      }
       setState(() {});
     });
   }
@@ -147,7 +150,9 @@ class _BankCardState extends State<BankCard>
       Provider.of<AppState>(context, listen: false).currentCard =
           widget.cardModel;
 
-      print("CLICKED CARD: ${widget.cardModel.toString()}");
+      if (kDebugMode) {
+        print("CLICKED CARD: ${widget.cardModel.toString()}");
+      }
       animationController.forward();
     }
   }
@@ -169,7 +174,9 @@ class _BankCardState extends State<BankCard>
               verticalDrag += details.delta.dy;
               verticalDrag %= 360;
 
-              print("VERTICAL DRAG :$verticalDrag");
+              if (kDebugMode) {
+                print("VERTICAL DRAG :$verticalDrag");
+              }
               setCardSide();
             });
           }
@@ -266,7 +273,7 @@ class _BankCardState extends State<BankCard>
                 ),
                 offset: const Offset(0, 25),
                 blurRadius: 50,
-              )
+              ),
             ],
           ),
           child: Column(
@@ -279,12 +286,13 @@ class _BankCardState extends State<BankCard>
                   width: 200,
                   height: 20,
                   decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                        12,
-                      )),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(
+                      12,
+                    ),
+                  ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -296,71 +304,72 @@ class _BankCardState extends State<BankCard>
         color: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: widget.cardModel.colors,
-                // begin: Alignment.topCenter,
-                transform: const GradientRotation(1 / 16),
-                end: Alignment.bottomCenter,
-              ),
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.white.withOpacity(
-                    .002,
-                  ),
-                  offset: const Offset(0, 15),
-                  blurRadius: 30,
-                )
-              ],
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: widget.cardModel.colors,
+              // begin: Alignment.topCenter,
+              transform: const GradientRotation(1 / 16),
+              end: Alignment.bottomCenter,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "Credit card",
-                        style: TextStyles.mainTextStyle.apply(
-                          color: Colors.white,
-                          fontSizeDelta: 4,
-                          fontWeightDelta: 5,
-                        ),
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.white.withOpacity(
+                  .002,
+                ),
+                offset: const Offset(0, 15),
+                blurRadius: 30,
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      "Credit card",
+                      style: TextStyles.mainTextStyle.apply(
+                        color: Colors.white,
+                        fontSizeDelta: 4,
+                        fontWeightDelta: 5,
                       ),
                     ),
-                    Transform.rotate(
-                      angle: pi * 90 / 180,
-                      child: const Icon(
-                        FontAwesomeIcons.wifi,
-                        size: 28,
-                        color: Colors.white,
-                      ),
-                    )
-                  ],
-                ),
-                const Spacer(),
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Icon(
-                    FontAwesomeIcons.microchip,
-                    size: 28,
-                    color: Colors.white,
                   ),
-                ),
-                const Spacer(),
-                const Align(
-                  alignment: Alignment.bottomRight,
-                  child: Icon(
-                    FontAwesomeIcons.ccMastercard,
-                    size: 28,
-                    color: Colors.white,
+                  Transform.rotate(
+                    angle: pi * 90 / 180,
+                    child: const Icon(
+                      FontAwesomeIcons.wifi,
+                      size: 28,
+                      color: Colors.white,
+                    ),
                   ),
-                )
-              ],
-            )),
+                ],
+              ),
+              const Spacer(),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Icon(
+                  FontAwesomeIcons.microchip,
+                  size: 28,
+                  color: Colors.white,
+                ),
+              ),
+              const Spacer(),
+              const Align(
+                alignment: Alignment.bottomRight,
+                child: Icon(
+                  FontAwesomeIcons.ccMastercard,
+                  size: 28,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
       );
 
   setCardSide() {

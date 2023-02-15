@@ -1,11 +1,12 @@
 import 'package:bank_cards_ui/data/card.dart';
 import 'package:bank_cards_ui/state.dart';
 import 'package:bank_cards_ui/widgets/bank_card.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CardsList extends StatefulWidget {
-  CardsList({
+  const CardsList({
     super.key,
   });
 
@@ -43,7 +44,9 @@ class _CardsListState extends State<CardsList>
               : const NeverScrollableScrollPhysics(),
           onPageChanged: (index) {
             setState(() {
-              print("CURRENT PAGE :${index}");
+              if (kDebugMode) {
+                print("CURRENT PAGE :$index");
+              }
               currentPage = index;
 
               animationController.forward();

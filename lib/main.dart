@@ -117,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage>
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           leading: const Icon(
-            FontAwesomeIcons.longArrowLeft,
+            FontAwesomeIcons.arrowLeftLong,
             color: Colors.white,
             size: 24,
           ),
@@ -236,7 +236,7 @@ class _MyHomePageState extends State<MyHomePage>
                         ),
                       ),
                     ),
-                    Expanded(
+                    const Expanded(
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: CardsList(),
